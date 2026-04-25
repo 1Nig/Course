@@ -81,7 +81,8 @@ public class ApartmentService {
             return new ArrayList<>();
         }
 
-        return apartments.subList(from, to);
+        return new ArrayList<>(apartments.subList(from, to));
+
     }
 
 }

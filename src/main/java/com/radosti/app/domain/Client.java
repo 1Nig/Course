@@ -23,12 +23,12 @@ public class Client {
     public void setSurname(String surname) {
         this.surname = surname;
     }
-    public Client(String name, String surname, String passportID){
+    public Client(String passportID, String name, String surname){
         this.name = name;
         this.surname = surname;
         this.passportID = passportID;
     }
-    public Client(String name, String passportID){
+    public Client(String passportID, String name){
         this.name = name;
         this.passportID = passportID;
     }

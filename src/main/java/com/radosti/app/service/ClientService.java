@@ -19,9 +19,9 @@ public void registerClient(String passportID, String name, String surname){
     }
 }
 
-    public Client findById (String passportId){
+    public Client findById (String passportID){
     for (Client a: clients){
-        if (a.getPassportID().equals(passportId)){
+        if (a.getPassportID().equals(passportID)){
             return a;
         }
     }

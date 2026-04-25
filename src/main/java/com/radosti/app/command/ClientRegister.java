@@ -8,7 +8,7 @@ public class ClientRegister implements Command{
         this.clientService = clientService;
     }
     public boolean matches(String[] parts){
-        if(parts.length == 5 && parts[0].equalsIgnoreCase("client")&& parts[1].equalsIgnoreCase("registrer")){
+        if(parts.length == 5 && parts[0].equalsIgnoreCase("client")&& parts[1].equalsIgnoreCase("register")){
             return true;
         }
         else{

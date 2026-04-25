@@ -18,7 +18,7 @@ public class ApartmentRelease implements Command{
 
     @Override
     public void execute(String[] parts) {
-        int id = Integer.parseInt(parts[3]);
+        int id = Integer.parseInt(parts[2]);
         apartmentService.releaseApartment(id);
     }
 }
