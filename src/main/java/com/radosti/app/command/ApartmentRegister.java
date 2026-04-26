@@ -17,7 +17,7 @@ public class ApartmentRegister implements Command{
     public void execute(String[] parts){
 
             int id = Integer.parseInt(parts[2]);
-            int price = Integer.parseInt(parts[3]);
+            double price = Double.parseDouble(parts[3]);
             apartmentService.registerApartment(id, price);
     }
 
