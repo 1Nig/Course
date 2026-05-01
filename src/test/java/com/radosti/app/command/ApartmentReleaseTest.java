@@ -1,5 +1,6 @@
 package com.radosti.app.command;
 
+import com.radosti.app.config.AppConfig;
 import com.radosti.app.service.ApartmentService;
 import com.radosti.app.service.ClientService;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,8 @@ public class ApartmentReleaseTest {
         String[] parts2 ={"find", "12"};
         String[] parts3 ={"apartment", "release", "12", "112"};
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
         ApartmentRelease command = new ApartmentRelease(apartmentService);
         assertTrue(command.matches(parts));
         assertTrue(command.matches(parts0));

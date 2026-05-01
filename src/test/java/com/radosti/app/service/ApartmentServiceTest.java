@@ -1,5 +1,6 @@
 package com.radosti.app.service;
 
+import com.radosti.app.config.AppConfig;
 import com.radosti.app.domain.Apartment;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,8 @@ public class ApartmentServiceTest {
     @Test
     void registerApartment_createNewApartment(){
     ClientService clientService = new ClientService();
-    ApartmentService apartmentService = new ApartmentService(clientService);
+    AppConfig appConfig = new AppConfig();
+    ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
 
     apartmentService.registerApartment(1, 100.0);
     Apartment a = apartmentService.findById(1);
@@ -22,7 +24,8 @@ public class ApartmentServiceTest {
     @Test
     void findById_SearchingApartment(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
         apartmentService.registerApartment(1, 100.0);
 
         assertNotNull(apartmentService.findById(1));
@@ -32,7 +35,8 @@ public class ApartmentServiceTest {
     @Test
     void reserveApartment_setReserveTrue(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
         apartmentService.registerApartment(1, 100.0);
         clientService.registerClient("12345", "John", "Johnson");
 
@@ -45,7 +49,8 @@ public class ApartmentServiceTest {
     @Test
     void releaseApartment_setReserveFalse(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
         apartmentService.registerApartment(1, 100.0);
         clientService.registerClient("12345", "John", "Johnson");
         apartmentService.reserveApartment(1, "12345");
@@ -59,7 +64,8 @@ public class ApartmentServiceTest {
      @Test
     void listApartment_checkingPagination(){
          ClientService clientService = new ClientService();
-         ApartmentService apartmentService = new ApartmentService(clientService);
+         AppConfig appConfig = new AppConfig();
+         ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
          apartmentService.registerApartment(1, 100.0);
          apartmentService.registerApartment(3, 200.0);
          apartmentService.registerApartment(7, 300.0);
