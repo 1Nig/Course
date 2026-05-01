@@ -1,6 +1,7 @@
 package com.radosti.app.app;
 
 import com.radosti.app.command.*;
+import com.radosti.app.config.AppConfig;
 import com.radosti.app.service.ApartmentService;
 import com.radosti.app.service.ClientService;
 
@@ -10,8 +11,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        AppConfig appConfig = new AppConfig();
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
         List<Command> commands = new ArrayList<>();
         ApartmentFind apartmentFind = new ApartmentFind(apartmentService);
         commands.add(apartmentFind);

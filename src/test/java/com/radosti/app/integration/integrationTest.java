@@ -3,11 +3,15 @@ package com.radosti.app.integration;
 import com.radosti.app.command.ApartmentRegister;
 import com.radosti.app.command.ApartmentReserve;
 import com.radosti.app.command.ClientRegister;
+import com.radosti.app.config.AppConfig;
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.service.ApartmentService;
 import com.radosti.app.service.ClientService;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +19,8 @@ public class integrationTest {
     @Test
     void Test_ApartmentRegistation_And_MakingList(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
 
         ApartmentRegister ApRegister = new ApartmentRegister(apartmentService);
 
@@ -31,7 +36,8 @@ public class integrationTest {
     @Test
     void Test_ApartmentRegistration_ClientRegistration_ApartmentReserve(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
 
         ApartmentRegister ApRegister = new ApartmentRegister(apartmentService);
         ClientRegister clientRegister = new ClientRegister(clientService);
@@ -49,7 +55,8 @@ public class integrationTest {
     @Test
     void Test_ApartmentRegistration_ClientRegistration_ApartmentReserve_MakingList(){
         ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        AppConfig appConfig = new AppConfig();
+        ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
 
         ApartmentRegister ApRegister = new ApartmentRegister(apartmentService);
         ClientRegister clientRegister = new ClientRegister(clientService);
@@ -68,5 +75,30 @@ public class integrationTest {
         assertEquals(1,list.size());
         assertTrue(list.get(0).isReserved());
         assertEquals("Johnson",list.get(0).getClient().getSurname());
+    }
+    @Test
+    void Test_SerializationSuccess() {
+        try {
+            File tempFile = File.createTempFile("apartments-test", ".json");
+            Files.writeString(tempFile.toPath(), "[]");
+
+            tempFile.deleteOnExit();
+            AppConfig appConfig = new AppConfig() {
+                @Override
+                public String getDataFile() {
+                    return tempFile.getAbsolutePath();
+                }
+            };
+            ClientService clientService = new ClientService();
+            ApartmentService apartmentService = new ApartmentService(clientService, appConfig);
+
+            apartmentService.registerApartment(1, 100.0);
+
+            String json = Files.readString(tempFile.toPath());
+            assertTrue(json.contains("\"id\":1"));
+            assertTrue(json.contains("\"price\":100.0"));}
+        catch (IOException e) {
+                throw new RuntimeException("The error occured: " + e.getMessage());
+            }
     }
 }

@@ -20,11 +20,10 @@ public void registerClient(String passportID, String name, String surname){
 }
 
     public Client findById (String passportID){
-    for (Client a: clients){
-        if (a.getPassportID().equals(passportID)){
-            return a;
-        }
-    }
-    return null;
-    }
+    return clients.stream()
+                    .filter(c -> c.getPassportID().equals(passportID))
+                            .findAny()
+                                    .orElse(null);
+}
+
 }
