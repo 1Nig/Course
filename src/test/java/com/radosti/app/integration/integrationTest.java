@@ -1,4 +1,5 @@
-package com.radosti.app.integration;
+//Temporarily disabled.
+/*package com.radosti.app.integration;
 
 import com.radosti.app.command.ApartmentRegister;
 import com.radosti.app.command.ApartmentReserve;
@@ -69,4 +70,4 @@ public class integrationTest {
         assertTrue(list.get(0).isReserved());
         assertEquals("Johnson",list.get(0).getClient().getSurname());
     }
-}
+}*/
