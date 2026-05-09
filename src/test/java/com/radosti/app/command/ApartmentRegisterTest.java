@@ -16,9 +16,9 @@ public class ApartmentRegisterTest {
         String[] parts1 ={"smth", "register", "12", "100.0"};
         String[] parts2 ={"apartment", "12"};
         String[] parts3 ={"apartment", "register", "12", "112", "smthElse"};
-        ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
-        ApartmentRegister command = new ApartmentRegister(apartmentService);
+
+        ApartmentRegister command = new ApartmentRegister(null);
+
         assertTrue(command.matches(parts));
         assertTrue(command.matches(parts0));
         assertFalse(command.matches(parts1));

@@ -14,8 +14,9 @@ public class ClientFindTest {
             String[] parts1 ={"smth", "find", "12"};
             String[] parts2 ={"find", "12"};
             String[] parts3 ={"client", "find", "12", "112"};
-            ClientService clientService = new ClientService();
-            ClientFind command = new ClientFind(clientService);
+
+            ClientFind command = new ClientFind(null);
+
             assertTrue(command.matches(parts));
             assertTrue(command.matches(parts0));
             assertFalse(command.matches(parts1));
