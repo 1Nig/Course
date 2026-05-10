@@ -1,7 +1,8 @@
 package com.radosti.app.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.radosti.app.config.AppConfig;
+import com.radosti.app.dao.ApartmentDAO;
+import com.radosti.app.dao.ClientDAO;
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.domain.Client;
 import com.radosti.app.service.ApartmentService;
@@ -13,7 +14,6 @@ import java.util.List;
 
 public class HotelServlet extends HttpServlet{
     private final ObjectMapper mapper = new ObjectMapper();
-    AppConfig appConfig = new AppConfig();
     private ClientService clientService;
     private ApartmentService apartmentService;
     @Override
@@ -21,8 +21,11 @@ public class HotelServlet extends HttpServlet{
         super.init();
 
         //App environment building and dependency injecting, like main() in CLII app
-        clientService = new ClientService();
-        apartmentService = new ApartmentService(clientService, appConfig);
+        ClientDAO clientDAO = new ClientDAO();
+        ApartmentDAO apartmentDAO = new ApartmentDAO();
+
+        clientService = new ClientService(clientDAO);
+        apartmentService = new ApartmentService(apartmentDAO, clientService);
         System.out.println("Servlet init processed");
     }
     @Override
