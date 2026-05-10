@@ -14,8 +14,9 @@ public class ClientRegisterTest {
         String[] parts1 ={"smth", "register", "1212AN", "John"};
         String[] parts2 ={"client", "12"};
         String[] parts3 ={"client", "find", "12", "John", "smthElse"};
-        ClientService clientService = new ClientService();
-        ClientRegister command = new ClientRegister(clientService);
+
+        ClientRegister command = new ClientRegister(null);
+
         assertTrue(command.matches(parts));
         assertTrue(command.matches(parts0));
         assertFalse(command.matches(parts1));

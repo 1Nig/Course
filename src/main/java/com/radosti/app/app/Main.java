@@ -1,6 +1,8 @@
 package com.radosti.app.app;
 
 import com.radosti.app.command.*;
+import com.radosti.app.dao.ApartmentDAO;
+import com.radosti.app.dao.ClientDAO;
 import com.radosti.app.service.ApartmentService;
 import com.radosti.app.service.ClientService;
 
@@ -10,8 +12,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+        ClientDAO clientDAO = new ClientDAO();
+        ApartmentDAO apartmentDAO = new ApartmentDAO();
+
+        ClientService clientService = new ClientService(clientDAO);
+        ApartmentService apartmentService = new ApartmentService(apartmentDAO, clientService);
+
         List<Command> commands = new ArrayList<>();
         ApartmentFind apartmentFind = new ApartmentFind(apartmentService);
         commands.add(apartmentFind);

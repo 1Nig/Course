@@ -14,9 +14,9 @@ public class ApartmentFindTest {
         String[] parts1 ={"smth", "find", "12"};
         String[] parts2 ={"find", "12"};
         String[] parts3 ={"apartment", "find", "12", "112"};
-        ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
-        ApartmentFind command = new ApartmentFind(apartmentService);
+
+        ApartmentFind command = new ApartmentFind(null);
+
         assertTrue(command.matches(parts));
         assertTrue(command.matches(parts0));
         assertFalse(command.matches(parts1));
