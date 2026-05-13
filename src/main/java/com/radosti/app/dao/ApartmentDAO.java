@@ -11,108 +11,73 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApartmentDAO {
-    public void save (Apartment apartment){
-        String sql = "INSERT INTO apartments (id, price) VALUES (?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)){
-             statement.setInt(1, apartment.getId());
-             statement.setDouble(2, apartment.getPrice());
+import com.radosti.app.config.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-             statement.executeUpdate();
-        }
-        catch(SQLException e){
-            System.out.println("The problem: " + e.getMessage());
+public class ApartmentDAO {
+    public void save (Apartment apartment) {
+        try (Session session = Hibernate.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.persist(apartment);
+            tx.commit();
+
         }
     }
     public Apartment findById(int id){
-        String sql = "SELECT * FROM apartments WHERE id = ? ";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)){
-            statement.setInt(1, id);
-
-            try(ResultSet rs = statement.executeQuery()){
-                if(rs.next()){
-                    Apartment apartment = new Apartment(
-                            rs.getInt("id"),
-                            rs.getDouble("price"),
-                            rs.getBoolean("isReserved")
-                            );
-
-                    return apartment;
-                }
-                else{
-                    return null;
-                }
+            try (Session session = Hibernate.getSessionFactory().openSession()) {
+                return session.find(Apartment.class, id);
             }
-        }
-        catch(SQLException e) {
-            throw new RuntimeException("Error finding a client", e);
-        }
+
     }
     public void updateReservation(int id, String client_passport, boolean isReserved) {
-        String sql = "UPDATE apartments SET is_reserved = ?, client_passport = ? WHERE id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Session session = Hibernate.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
 
-            statement.setBoolean(1, isReserved);
-            statement.setString(2, client_passport);
-            statement.setInt(3, id);
-
-            statement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating reservation " + e.getMessage());
+            Apartment apartment = session.find(Apartment.class, id);
+            if(apartment == null){
+                System.out.println("The apartment wasn't found.");
+            }
+            else{
+                Client client = session.find(Client.class,client_passport);
+                if(client == null){
+                    System.out.println("The client wasn't found.");
+                }
+                else{
+                apartment.setReserved(isReserved);
+                apartment.setClient(client);}
+            }
+            tx.commit();
         }
     }
     public void updateRelease(int id, boolean isReserved) {
-        String sql = "UPDATE apartments SET is_reserved = ?, WHERE id = ?, client_passport = ?";
+        try (Session session = Hibernate.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setBoolean(1, isReserved);
-            statement.setInt(2, id);
-            statement.setString(3, null);
-
-            statement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating reservation " + e.getMessage());
+            Apartment apartment = session.find(Apartment.class, id);
+            if(apartment == null){
+                System.out.println("The apartment wasn't found.");
+            }
+            else{
+                apartment.setReserved(false);
+                apartment.setClient(null);
+            }
+            tx.commit();
         }
     }
     public List<Apartment> findAll(int page, int size, String sortBy) {
+        try (Session session = Hibernate.getSessionFactory().openSession()) {
 
-        String sql = "SELECT * FROM apartments ORDER BY " + sortBy + " LIMIT ? OFFSET ?";
-
-        List<Apartment> result = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)) {
-
-            statement.setInt(1, size);
-            statement.setInt(2, (page - 1) * size);
-
-            try (ResultSet rs = statement.executeQuery()) {
-                while (rs.next()) {
-                    Apartment apartment = new Apartment(
-                            rs.getInt("id"),
-                            rs.getDouble("price"),
-                            rs.getBoolean("is_reserved"),
-                            rs.getString("client_passport")
-                    );
-                    result.add(apartment);
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error listing apartments", e);
+            return session.createQuery(
+                            "from Apartment order by " + sortBy, Apartment.class)
+                    .setFirstResult((page - 1) * size)
+                    .setMaxResults(size)
+                    .list();
         }
-
-        return result;
     }
+
 
 
 }
