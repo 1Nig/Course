@@ -1,11 +1,17 @@
 package com.radosti.app.domain;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table
 public class Apartment {
+    @Id
     private int id;
     private double price;
     private boolean isReserved;
+    @ManyToOne
+    @JoinColumn(name = "client_passport")
     private Client client;
-
     public int getId() {
         return id;
     }
@@ -25,12 +31,15 @@ public class Apartment {
         return price;
     }
 
+
     public Client getClient() {
         return client;
     }
     public void setClient(Client client) {
         this.client = client;
     }
+
+
     public Apartment(int id, double price, boolean isReserved){
         this.id = id;
         this.price = price;
@@ -41,4 +50,6 @@ public class Apartment {
         this.price = price;
         this.isReserved = false;
     }
+    public Apartment() {}
+
 }

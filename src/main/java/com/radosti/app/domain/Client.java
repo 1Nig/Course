@@ -1,9 +1,20 @@
 package com.radosti.app.domain;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
+
+@Entity
+@Table(name = "clients")
 public class Client {
     private String name;
     private String surname;
+    @Id
+    @Column(name = "passport_id")
     private String passportID;
+    @OneToMany(mappedBy = "client")
+    private List<Apartment> apartments;
 
     public String getName() {
         return name;
@@ -32,4 +43,5 @@ public class Client {
         this.name = name;
         this.passportID = passportID;
     }
+    public Client(){}
 }

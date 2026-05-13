@@ -15,9 +15,9 @@ public class ApartmentReleaseTest {
         String[] parts1 ={"smth", "release", "12"};
         String[] parts2 ={"find", "12"};
         String[] parts3 ={"apartment", "release", "12", "112"};
-        ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
-        ApartmentRelease command = new ApartmentRelease(apartmentService);
+
+        ApartmentRelease command = new ApartmentRelease(null);
+
         assertTrue(command.matches(parts));
         assertTrue(command.matches(parts0));
         assertFalse(command.matches(parts1));

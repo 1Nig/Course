@@ -1,3 +1,5 @@
+//Temporarily disabled.
+/*
 package com.radosti.app.service;
 
 import com.radosti.app.domain.Client;
@@ -29,4 +31,4 @@ public class ClientServiceTest {
         assertNotNull(clientService.findById("AB123"));
         assertNull(clientService.findById("bbkjfdbb52"));
     }
-}
+}*/

@@ -15,9 +15,9 @@ public class PrintListOfApartmentsTest {
             String[] parts1 ={"smth", "List", "1212", "PRice"};
             String[] parts2 ={"apartment", "12"};
             String[] parts3 ={"apartment", "List", "12", "1254", "price", "smthElse"};
-            ClientService clientService = new ClientService();
-            ApartmentService apartmentService = new ApartmentService(clientService);
-            PrintListOfApartments command = new PrintListOfApartments(apartmentService);
+
+            PrintListOfApartments command = new PrintListOfApartments(null);
+
             assertTrue(command.matches(parts));
             assertTrue(command.matches(parts0));
             assertFalse(command.matches(parts1));

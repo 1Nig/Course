@@ -1,17 +1,22 @@
 package com.radosti.app.service;
 
+import com.radosti.app.dao.ApartmentDAO;
+import com.radosti.app.dao.ClientDAO;
 import com.radosti.app.domain.Client;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientService {
-private List<Client> clients = new ArrayList<>();
+    private ClientDAO clientDAO;
+    public ClientService(ClientDAO clientDAO){
+        this.clientDAO = clientDAO;
+    }
 public void registerClient(String passportID, String name, String surname){
-    Client client = findById(passportID);
-    if(client == null){
-        client = new Client(passportID, name, surname);
-        clients.add(client);
+    Client existing = clientDAO.findById(passportID);
+    if(existing == null){
+        Client client = new Client(passportID, name, surname);
+        clientDAO.save(client);
         System.out.println("The registration is successfully finished!");
     }
     else{
@@ -20,11 +25,6 @@ public void registerClient(String passportID, String name, String surname){
 }
 
     public Client findById (String passportID){
-    for (Client a: clients){
-        if (a.getPassportID().equals(passportID)){
-            return a;
-        }
-    }
-    return null;
+    return clientDAO.findById(passportID);
     }
 }
