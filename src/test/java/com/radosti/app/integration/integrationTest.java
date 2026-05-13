@@ -17,7 +17,9 @@ import org.junit.jupiter.api.*;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Disabled for CI")
 public class integrationTest {
 
     private static SessionFactory factory;

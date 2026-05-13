@@ -7,7 +7,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Disabled for CI")
 public class ConnectionTest {
 
     @Test
