@@ -1,27 +1,24 @@
 package com.radosti.app.dao;
 
 import com.radosti.app.domain.Client;
-import com.radosti.app.config.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository
 public class ClientDAO {
+    @PersistenceContext
+    private EntityManager entityManager;
 
-            public void save(Client client) {
-
-                try (Session session = Hibernate.getSessionFactory().openSession()) {
-                    Transaction tx = session.beginTransaction();
-                    session.persist(client);
-                    tx.commit();
-
-                }
-            }
-        public Client findById(String passportID){
-            try (Session session = Hibernate.getSessionFactory().openSession()) {
-                return session.find(Client.class, passportID);
-            }
-
-        }
+    @Transactional
+    public void save(Client client) {
+        entityManager.persist(client);
     }
+    @Transactional(readOnly = true)
+    public Client findById(String passportID){
+        return entityManager.find(Client.class, passportID);
+    }
+}
 
 

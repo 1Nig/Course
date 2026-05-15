@@ -3,11 +3,13 @@ package com.radosti.app.service;
 import com.radosti.app.dao.ApartmentDAO;
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.domain.Client;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Service
 public class ApartmentService {
     private ClientService clientService;
     private ApartmentDAO apartmentDAO;
@@ -62,7 +64,7 @@ public class ApartmentService {
         else{
             existing.setReserved(false);
             existing.setClient(null);
-            apartmentDAO.updateRelease(existing.getId(), existing.isReserved());
+            apartmentDAO.updateRelease(existing.getId());
             System.out.println("The apartment is successfully released.");
         }
 

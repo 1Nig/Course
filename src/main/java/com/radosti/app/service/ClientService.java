@@ -3,10 +3,12 @@ package com.radosti.app.service;
 import com.radosti.app.dao.ApartmentDAO;
 import com.radosti.app.dao.ClientDAO;
 import com.radosti.app.domain.Client;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ClientService {
     private ClientDAO clientDAO;
     public ClientService(ClientDAO clientDAO){

@@ -10,8 +10,10 @@ public class Apartment {
     private double price;
     private boolean isReserved;
     @ManyToOne
-    @JoinColumn(name = "client_passport")
+    @JoinColumn(name = "client_id")
     private Client client;
+
+
     public int getId() {
         return id;
     }
