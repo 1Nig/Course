@@ -1,8 +1,12 @@
 package com.radosti.app.controller;
 
 import com.radosti.app.domain.Client;
+import com.radosti.app.dto.ClientCreateRequest;
 import com.radosti.app.service.ClientService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/clients")
@@ -15,13 +19,15 @@ public class ClientController {
     }
 
     @PostMapping("/register")
-    public String registerClient(@RequestBody Client client) {
-        clientService.registerClient(client.getPassportID(), client.getName(), client.getSurname());
-        return "Client registered successfully";
+    public ResponseEntity<Map<String, Object>> registerClient(@RequestBody ClientCreateRequest request) {
+        Client created = clientService.registerClient(request);
+        return ResponseEntity
+                .status(201)
+                .body(Map.of("passportID", created.getPassportID()));
     }
 
     @GetMapping("/{passportID}")
-    public Client findClient(@PathVariable String passportID) {
-        return clientService.findById(passportID);
+    public ResponseEntity<Client> findClient(@PathVariable String passportID) {
+        return ResponseEntity.ok(clientService.findById(passportID));
     }
 }

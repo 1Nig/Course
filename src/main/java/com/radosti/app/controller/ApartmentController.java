@@ -1,14 +1,19 @@
 package com.radosti.app.controller;
 
 import com.radosti.app.domain.Apartment;
+import com.radosti.app.dto.ApartmentCreateRequest;
 import com.radosti.app.service.ApartmentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/apartments")
 public class ApartmentController {
+
     private final ApartmentService apartmentService;
 
     public ApartmentController(ApartmentService apartmentService) {
@@ -16,9 +21,11 @@ public class ApartmentController {
     }
 
     @PostMapping("/register")
-    public String registerApartment(@RequestParam int id, @RequestParam double price) {
-        apartmentService.registerApartment(id, price);
-        return "Apartment registered successfully";
+    public ResponseEntity<Map<String, Object>> registerApartment(@RequestBody ApartmentCreateRequest request) {
+        Apartment created = apartmentService.registerApartment(request);
+        return ResponseEntity
+                .status(201)
+                .body(Map.of("id", created.getId()));
     }
 
     @GetMapping("/{id}")
@@ -27,19 +34,30 @@ public class ApartmentController {
     }
 
     @PostMapping("/{id}/reserve")
-    public String reserveApartment(@PathVariable int id, @RequestParam String passportID) {
-        apartmentService.reserveApartment(id, passportID);
-        return "Reservation attempt completed";
+    public ResponseEntity<Map<String, Object>> reserveApartment(
+            @PathVariable int id,
+            @RequestBody Map<String, String> request
+    ) {
+        String passportID = request.get("passportID");
+
+        Apartment updated = apartmentService.reserveApartment(id, passportID);
+
+        return ResponseEntity
+                .ok(Map.of("id", updated.getId(), "status", "reserved"));
     }
 
+
     @PostMapping("/{id}/release")
-    public String releaseApartment(@PathVariable int id) {
-        apartmentService.releaseApartment(id);
-        return "Release attempt completed";
+    public ResponseEntity<Map<String, Object>> releaseApartment(
+            @PathVariable int id) {
+        Apartment updated = apartmentService.releaseApartment(id);
+        return ResponseEntity
+                .ok(Map.of("id", updated.getId(), "status", "free"));
     }
 
     @GetMapping
-    public List<Apartment> listApartments(@RequestParam int page, @RequestParam int size, @RequestParam String sortBy) {
-        return apartmentService.listApartments(page, size, sortBy);
+    public ResponseEntity<Page<Apartment>> listApartments(Pageable pageable) {
+        return ResponseEntity.ok(apartmentService.listApartments(pageable));
     }
+
 }

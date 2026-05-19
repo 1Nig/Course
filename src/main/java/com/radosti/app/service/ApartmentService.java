@@ -1,78 +1,67 @@
 package com.radosti.app.service;
 
-import com.radosti.app.dao.ApartmentDAO;
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.domain.Client;
+import com.radosti.app.repository.ClientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.radosti.app.dto.ApartmentCreateRequest;
+import com.radosti.app.repository.ApartmentRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 public class ApartmentService {
-    private ClientService clientService;
-    private ApartmentDAO apartmentDAO;
+    private final ClientRepository clientRepository;
+    private final ApartmentRepository apartmentRepository;
 
-    public ApartmentService(ApartmentDAO apartmentDAO, ClientService clientService){
-        this.apartmentDAO = apartmentDAO;
-        this.clientService = clientService;}
+    public ApartmentService(ApartmentRepository apartmentRepository, ClientRepository clientRepository) {
+        this.apartmentRepository = apartmentRepository;
+        this.clientRepository = clientRepository;
+    }
 
-
-    public void registerApartment(int id, double price){
-        Apartment existing = apartmentDAO.findById(id);
-        if(existing == null){
-            apartmentDAO.save(new Apartment(id, price));
-        }
-        else{
-            System.out.println("The apartment with this id is already registred.");
-        }
+    public Apartment registerApartment(ApartmentCreateRequest request){
+        Apartment apartment = new Apartment(request.id(), request.price());
+        return apartmentRepository.save(apartment);
     }
     public Apartment findById(int id) {
-        return apartmentDAO.findById(id);
+        return apartmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
     }
 
-
-    public void reserveApartment(int id, String passportID){
-        Apartment existing = apartmentDAO.findById(id);
-        Client  client = clientService.findById(passportID);
-        if(existing == null){
-            System.out.println("Apartment is not found out.");
-
+    public Apartment reserveApartment(int apartmentId, String passportID){
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
+        Client  client = clientRepository.findById(passportID)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+        if (apartment.isReserved()){
+            throw new RuntimeException("Apartment is already reserved.");
         }
-        else if(client == null){
-            System.out.println("The client is not found out.");}
 
-        else  if (existing.isReserved()){
-            System.out.println("Apartment is already reserved.");
-        }
-        else {
-            existing.setReserved(true);
-            existing.setClient(client);
-            apartmentDAO.updateReservation(existing.getId(), passportID, existing.isReserved());
-            System.out.println("The apartment is successfully reserved by "+ client.getName());
-        }
+        apartment.setReserved(true);
+        apartment.setClient(client);
+
+        return apartmentRepository.save(apartment);
     }
-    public void releaseApartment(int id){
-        Apartment existing = apartmentDAO.findById(id);
-        if(existing == null){
-            System.out.println("There's no apartment with this id.");
-        }
-        else if(!existing.isReserved()){
-            System.out.println("The apartment wasn't reserved.");
-        }
-        else{
-            existing.setReserved(false);
-            existing.setClient(null);
-            apartmentDAO.updateRelease(existing.getId());
-            System.out.println("The apartment is successfully released.");
+    public Apartment releaseApartment(int apartmentId){
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
+
+        if(!apartment.isReserved()){
+            throw new RuntimeException("The apartment wasn't reserved.");
         }
 
+        apartment.setReserved(false);
+        apartment.setClient(null);
+
+        return apartmentRepository.save(apartment);
     }
 
-    public List<Apartment> listApartments(int page, int size, String sortBy) {
-        return apartmentDAO.findAll(page, size, sortBy);
+    public Page<Apartment> listApartments(Pageable pageable) {
+
+        return apartmentRepository.findAll(pageable);
     }
+
 
 
 }
