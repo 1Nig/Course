@@ -2,87 +2,66 @@ package com.radosti.app.service;
 
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.domain.Client;
+import com.radosti.app.repository.ClientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import com.radosti.app.dto.ApartmentCreateRequest;
+import com.radosti.app.repository.ApartmentRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
+@Service
 public class ApartmentService {
-    private ClientService clientService;
-    public ApartmentService(ClientService clientService){
-    this.clientService = clientService;}
+    private final ClientRepository clientRepository;
+    private final ApartmentRepository apartmentRepository;
 
-    private List<Apartment> apartments = new ArrayList<>();
-    public void registerApartment(int id, double price){
-        Apartment apartment = findById(id);
-        if(apartment == null){
-            apartment = new Apartment(id, price);
-            apartments.add(apartment);
-        }
-        else{
-            System.out.println("The apartment with this id is already registred.");
-        }
-    }
-    public Apartment findById (int id){
-        for (Apartment a : apartments) {
-            if (a.getId() == id) {
-                return a;
-            }
-        }
-        return null;
+    public ApartmentService(ApartmentRepository apartmentRepository, ClientRepository clientRepository) {
+        this.apartmentRepository = apartmentRepository;
+        this.clientRepository = clientRepository;
     }
 
-    public void reserveApartment(int id, String passportID){
-        Apartment apartment = findById(id);
-        Client  client = clientService.findById(passportID);
-        if(apartment == null){
-            System.out.println("Apartment is not found out.");
-
-        }
-        else if(client == null){
-            System.out.println("The client is not found out.");}
-
-        else  if (apartment.isReserved()){
-            System.out.println("Apartment is already reserved.");
-        }
-        else {
-            apartment.setReserved(true);
-            apartment.setClient(client);
-            System.out.println("The apartment is successfully reserved by "+ client.getName());
-        }
+    public Apartment registerApartment(ApartmentCreateRequest request){
+        Apartment apartment = new Apartment(request.id(), request.price());
+        return apartmentRepository.save(apartment);
     }
-    public void releaseApartment(int id){
-        Apartment apartment = findById(id);
-        if(apartment == null){
-            System.out.println("There's no apartment with this id.");
-        }
-        else if(apartment.isReserved()==false){
-            System.out.println("The apartment wasn't reserved.");
-        }
-        else{
-            apartment.setReserved(false);
-            apartment.setClient(null);
-            System.out.println("The apartment is successfully released.");
-        }
-
+    public Apartment findById(int id) {
+        return apartmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
     }
 
-    public List<Apartment> listApartments(int page, int size, String sortBy) {
-        if (sortBy.equals("price")) {
-            apartments.sort(Comparator.comparingDouble(Apartment::getPrice));
-        } else if (sortBy.equals("id")) {
-            apartments.sort(Comparator.comparingInt(Apartment::getId));
+    public Apartment reserveApartment(int apartmentId, String passportID){
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
+        Client  client = clientRepository.findById(passportID)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+        if (apartment.isReserved()){
+            throw new RuntimeException("Apartment is already reserved.");
         }
 
-        int from = (page - 1) * size;
-        int to = Math.min(from + size, apartments.size());
+        apartment.setReserved(true);
+        apartment.setClient(client);
 
-        if (from >= apartments.size()) {
-            return new ArrayList<>();
-        }
-
-        return new ArrayList<>(apartments.subList(from, to));
-
+        return apartmentRepository.save(apartment);
     }
+    public Apartment releaseApartment(int apartmentId){
+        Apartment apartment = apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new RuntimeException("Apartment not found"));
+
+        if(!apartment.isReserved()){
+            throw new RuntimeException("The apartment wasn't reserved.");
+        }
+
+        apartment.setReserved(false);
+        apartment.setClient(null);
+
+        return apartmentRepository.save(apartment);
+    }
+
+    public Page<Apartment> listApartments(Pageable pageable) {
+
+        return apartmentRepository.findAll(pageable);
+    }
+
+
 
 }

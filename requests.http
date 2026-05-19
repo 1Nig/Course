@@ -1,0 +1,32 @@
+### Найти клиента
+GET http://localhost:8080/Hotel-1.0-SNAPSHOT/api/clientFind?passportID=AB12345
+
+### Найти квартиру
+GET http://localhost:8080/Hotel-1.0-SNAPSHOT/api/apartmentFind?id=1
+
+### Получить список квартир
+GET http://localhost:8080/Hotel-1.0-SNAPSHOT/api/printListOfApartments?page=1&size=10&sortBy=id
+
+### Зарегистрировать квартиру
+POST http://localhost:8080/Hotel-1.0-SNAPSHOT/api/apartmentRegister
+Content-Type: application/x-www-form-urlencoded
+
+id=1&price=100
+
+### Освободить квартиру
+POST http://localhost:8080/Hotel-1.0-SNAPSHOT/api/apartmentRelease
+Content-Type: application/x-www-form-urlencoded
+
+id=1
+
+### Забронировать квартиру
+POST http://localhost:8080/Hotel-1.0-SNAPSHOT/api/apartmentReserve
+Content-Type: application/x-www-form-urlencoded
+
+id=1&passportID=AB12345
+
+### Зарегистрировать клиента
+POST http://localhost:8080/Hotel-1.0-SNAPSHOT/api/clientRegister
+Content-Type: application/x-www-form-urlencoded
+
+passportID=AB12345&name=John&surname=Doe

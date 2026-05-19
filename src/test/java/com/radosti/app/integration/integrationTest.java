@@ -1,38 +1,71 @@
 package com.radosti.app.integration;
 
-import com.radosti.app.command.ApartmentRegister;
-import com.radosti.app.command.ApartmentReserve;
-import com.radosti.app.command.ClientRegister;
 import com.radosti.app.domain.Apartment;
+import com.radosti.app.dto.ApartmentCreateRequest;
+import com.radosti.app.dto.ClientCreateRequest;
 import com.radosti.app.service.ApartmentService;
 import com.radosti.app.service.ClientService;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled("Integration test — requires real DB")
+@SpringBootTest
+@Transactional
 public class integrationTest {
+
+    @Autowired
+    private ApartmentService apartmentService;
+
+    @Autowired
+    private ClientService clientService;
+
     @Test
-    void TestRegisterReserveAndList(){
-        ClientService clientService = new ClientService();
-        ApartmentService apartmentService = new ApartmentService(clientService);
+    void Test_ApartmentRegistration_And_MakingList() {
 
-        ApartmentRegister ApRegister = new ApartmentRegister(apartmentService);
-        ClientRegister clientRegister = new ClientRegister(clientService);
-        ApartmentReserve ApReserve = new ApartmentReserve(apartmentService);
+        apartmentService.registerApartment(new ApartmentCreateRequest(1, 100.0));
 
-        String[] ap_register = {"apartment", "register", "1", "100.0"};
-        String[] client_register = {"client", "register", "AB123", "John", "Johnson"};
-        String[] ap_reserve = {"apartment", "reserve", "1", "AB123"};
+        Page<Apartment> page = apartmentService.listApartments(PageRequest.of(0, 1));
 
-        ApRegister.execute(ap_register);
-        clientRegister.execute(client_register);
-        ApReserve.execute(ap_reserve);
+        assertEquals(1, page.getTotalElements());
+        Apartment a = page.getContent().get(0);
 
-        List<Apartment> list = apartmentService.listApartments(1, 1, "price");
+        assertEquals(100.0, a.getPrice());
+        assertFalse(a.isReserved());
+    }
 
-        assertEquals(1,list.size());
-        assertTrue(list.get(0).isReserved());
-        assertEquals("Johnson",list.get(0).getClient().getSurname());
+    @Test
+    void Test_ApartmentRegistration_ClientRegistration_ApartmentReserve() {
+
+        apartmentService.registerApartment(new ApartmentCreateRequest(1, 100.0));
+        clientService.registerClient(new ClientCreateRequest("AB123", "John", "Johnson"));
+
+        apartmentService.reserveApartment(1, "AB123");
+
+        Apartment a = apartmentService.findById(1);
+
+        assertTrue(a.isReserved());
+        assertEquals("AB123", a.getClient().getPassportID());
+    }
+
+    @Test
+    void Test_ApartmentRegistration_ClientRegistration_ApartmentReserve_MakingList() {
+
+        apartmentService.registerApartment(new ApartmentCreateRequest(1, 100.0));
+        clientService.registerClient(new ClientCreateRequest("AB123", "John", "Johnson"));
+        apartmentService.reserveApartment(1, "AB123");
+
+        Page<Apartment> page = apartmentService.listApartments(PageRequest.of(0, 1));
+
+        assertEquals(1, page.getTotalElements());
+        Apartment a = page.getContent().get(0);
+
+        assertTrue(a.isReserved());
+        assertEquals("Johnson", a.getClient().getSurname());
     }
 }
