@@ -1,4 +1,4 @@
-package com.radosti.app.integration;
+package com.radosti.app;
 
 import com.radosti.app.domain.Apartment;
 import com.radosti.app.dto.ApartmentCreateRequest;
