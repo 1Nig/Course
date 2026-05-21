@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-clients-table
+      author: radosti
+      changes:
+        - createTable:
+            tableName: clients
+            columns:
+              - column:
+                  name: passport_id
+                  type: VARCHAR(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: surname
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false

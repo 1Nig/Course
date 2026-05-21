@@ -1,30 +1,36 @@
 package com.radosti.app.service;
 
 import com.radosti.app.domain.Client;
+import com.radosti.app.dto.ClientCreateRequest;
+import com.radosti.app.repository.ClientRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Service
 public class ClientService {
-private List<Client> clients = new ArrayList<>();
-public void registerClient(String passportID, String name, String surname){
-    Client client = findById(passportID);
-    if(client == null){
-        client = new Client(passportID, name, surname);
-        clients.add(client);
-        System.out.println("The registration is successfully finished!");
-    }
-    else{
-        System.out.println("The client is already registred.");
-    }
-}
 
-    public Client findById (String passportID){
-    for (Client a: clients){
-        if (a.getPassportID().equals(passportID)){
-            return a;
-        }
+    private final ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
-    return null;
+
+    public Client registerClient(ClientCreateRequest request) {
+
+        if (clientRepository.existsById(request.passportID())) {
+            throw new RuntimeException("Client already exists");
+        }
+
+        Client client = new Client(
+                request.passportID(),
+                request.name(),
+                request.surname()
+        );
+
+        return clientRepository.save(client);
+    }
+
+    public Client findById(String passportID) {
+        return clientRepository.findById(passportID)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
     }
 }

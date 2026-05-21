@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-apartments-table
+      author: radosti
+      changes:
+        - createTable:
+            tableName: apartments
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: price
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: reserved
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: client_id
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseTableName: apartments
+            baseColumnNames: client_id
+            referencedTableName: clients
+            referencedColumnNames: passport_id
+            constraintName: fk_apartment_client
+            onDelete: SET NULL
